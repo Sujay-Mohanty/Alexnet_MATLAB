@@ -1,0 +1,79 @@
+% clc
+% clear all
+% close all
+% 
+% load training.mat;
+% count=testdata.countEachLabel
+% allclass=[];
+% for i=i:length(testdata.Labels)
+%     t=imread(testdata,i);
+%     class=classify(training,t);
+%     allclass=[allclass, class];
+% end
+% 
+% predicted=allclass;
+% figure,
+% plotconfusion(testdata.Labels,predicted);
+% 
+% 
+% 
+
+clc
+clear all
+close all
+
+load training.mat;
+
+% Display the count for each label in the test data
+count = testdata.countEachLabel
+
+% Initialize an empty array to store all predicted classes
+allclass = [];
+
+% Correct the loop initialization and iterate through the test data
+for i = 1:length(testdata.Labels)  % Use '1' instead of 'i'
+    t = imread(testdata.Files{i}); % Access image using Files{i}
+    class = classify(training, t);
+    allclass = [allclass, class];
+end
+
+% Convert 'allclass' to a categorical vector to match 'testdata.Labels' type
+predicted = categorical(allclass, unique(count.Label));
+
+
+
+% Initialize variables to keep track of true positive, false positive, and false negative
+tp = 0;
+fp = 0;
+fn = 0;
+
+% Correct the loop initialization and iterate through the test data
+for i = 1:length(testdata.Labels)  % Use '1' instead of 'i'
+    t = imread(testdata.Files{i}); % Access image using Files{i}
+    class = classify(training, t);
+    allclass = [allclass, class];
+    
+    % Calculate true positive, false positive, and false negative
+    trueLabel = testdata.Labels(i);
+    if class == trueLabel
+        tp = tp + 1; % True positive
+    else
+        fp = fp + 1; % False positive
+        fn = fn + 1; % False negative
+    end
+end
+
+% Convert 'allclass' to a categorical vector to match 'testdata.Labels' type
+predicted = categorical(allclass, unique(count.Label));
+
+% Calculate precision and recall
+precision = tp / (tp + fp);
+recall = tp / (tp + fn);
+
+% Display precision and recall
+fprintf('Precision: %.2f\n', precision);
+fprintf('Recall: %.2f\n', recall);
+
+figure
+plotconfusion(testdata.Labels, predicted');
+
